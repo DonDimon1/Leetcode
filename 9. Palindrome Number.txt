@@ -1,0 +1,24 @@
+/*Нам нужно отзеркалить число. Для этого делим его на 10. Цифра в остатке
+является последей цифрой в числе. Добовляем её в переменную для сравнивания.
+Повторяем цикл. (Не забываем умножать на 10).
+
+*/
+
+class Solution {
+public:
+    bool isPalindrome(int x) {
+        if(x < 0)
+            return false;
+        int temp = x;
+        int unsigned anticipatedPalindrome = 0;
+        while (temp != 0)
+        {
+            anticipatedPalindrome = anticipatedPalindrome * 10 + temp % 10;
+            temp /= 10;
+        }
+        if (anticipatedPalindrome == x)
+            return true;
+        else
+            return false;
+    }
+};

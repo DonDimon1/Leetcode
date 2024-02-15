@@ -1,0 +1,108 @@
+//Самое крутое решение без long. 
+//Как код работает я понял, но глобальную идею я не разобрал.
+int divide(int dividend, int divisor) {
+	//Отдельные случаи
+	if (dividend == INT_MIN && divisor == -1) return INT_MAX;
+	if (dividend == INT_MIN && divisor == 1) return INT_MIN;
+	if (dividend == INT_MIN && divisor == INT_MIN) return 1;
+	if (divisor == INT_MIN) return 0;
+
+	//sign нужна для определения знака финального ответа(+ или -)
+	//Здесь используются побитывые операции. У всех отрицательных чисел самый большой бит будет единичным.
+	//1 << 31 это -2147483648 = INT_MIN. В двоичном виде это -10000000000000000000000000000000. То есть все 0 кроме старшего бита(он 1).
+	//& Возвращает 1, если оба числа равны 1. Если оба числа отрицательны, то у обоих чисел в двоичном виде старший бит будет = 1. Операция & выдаст true.
+	//^ Возвращает 1, если только одино из чисел равно 1. Т.о. Если ТОЛЬКО ОДНА переменная будет отрицательной, sign будет = true, иначе false;
+	bool sign = (dividend & (1 << 31)) ^ (divisor & (1 << 31));
+	int ans = 0; //Ответ
+	if (divisor < 0) divisor = -divisor;//Меняем знак делителя если он отрицательный
+	if (dividend == INT_MIN) {//Если делимое == предельному минимальному значению int
+		dividend += divisor; //Прибавляем к делимому делитель. Избегаем переполнение int
+		ans++;//Ответ = 1
+	}
+
+	if (dividend < 0) dividend = -dividend;//Меняем знак делимого если он отрицательный
+
+	while (true) {
+		int x = 0;
+		//Увелчиваем х пока делитель больше нуля и не больше делимого
+		//Делитель << x может переполниться (когда он станет отрицательным)
+		// divisor << x could overflow (when it becomes negative)
+		while ((divisor << x) > 0 && dividend >= (divisor << x)) x++;
+
+		if (!x) break;//Если x = 0
+		ans += 1 << (x - 1);//Добавляем ответ
+		dividend -= divisor << (x - 1);//Уменьшаем делимое
+	}
+
+	return sign ? -ans : ans; // Если sign true то возвращаем -ans иначе возвращаем ans.
+}
+
+
+
+//Решение с лонгами.
+class Solution {
+public:
+    int divide(int dividend, int divisor) {
+        if (dividend == INT_MIN && divisor == -1) {
+            return INT_MAX;
+        }
+        long dvd = labs(dividend), dvs = labs(divisor), ans = 0;
+        int sign = dividend > 0 ^ divisor > 0 ? -1 : 1;
+        while (dvd >= dvs) {
+            long temp = dvs, m = 1;
+            while (temp << 1 <= dvd) {
+                temp <<= 1;
+                m <<= 1;
+            }
+            dvd -= temp;
+            ans += m;
+        }
+        return sign * ans;
+    }
+};
+
+//Мой код. Возникает ошибка переполнения int. Решается она присвоением long весто int и задачей множества if, но в этой задаче это не правильно.
+//Да тут главная проблема не деление, а переполнение int.
+class Solution {
+public:
+    int divide(int dividend, int divisor) {
+        if (dividend == INT_MIN && divisor == -1) {
+            return INT_MAX;
+        }
+        long answer = 0;
+        if (dividend < 0 && divisor < 0) {
+            while (dividend <= divisor) {
+                dividend -= divisor;
+                answer++;
+            }
+        }
+        else if (dividend < 0) {
+            divisor = 0 - divisor;
+            while (dividend <= divisor) {
+                dividend -= divisor;
+                answer++;
+            }
+            answer = 0 - answer;
+        }
+        else if (divisor < 0) {
+            divisor = 0 - divisor;
+            while (dividend >= divisor) {
+                dividend -= divisor;
+                answer++;
+            }
+            answer = 0 - answer;
+        }
+        else {
+            while (dividend >= divisor) {
+                dividend -= divisor;
+                answer++;
+            }
+        }
+        if (answer > 2147483647)
+            return 2147483647;
+        if (answer < -2147483648)
+            return -2147483648;
+        else
+            return answer;
+    }
+};

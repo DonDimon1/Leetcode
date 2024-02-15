@@ -1,0 +1,25 @@
+/*Создаём новый общий вектор, копируем туда два исходных, сортируем общий вектор.
+Если длинна вектора нечётная, то средний вектор является решением.
+Если длинна вектора чётная, то решением является арифметическое среднее между 
+элементами, которые находятся между серединой*/
+
+
+class Solution {
+public:
+    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+        vector<int> generalNums;
+        if(!nums1.empty())
+	        generalNums.insert(generalNums.begin(), nums1.begin(), nums1.end());
+        if(!nums2.empty())
+	        generalNums.insert(generalNums.end(), nums2.begin(), nums2.end());
+	    sort(generalNums.begin(), generalNums.end());
+	    if ((nums1.size() + nums2.size()) % 2 != 0)
+		    return generalNums[generalNums.size() / 2];
+        else
+        {
+		    double evenMean = generalNums[generalNums.size() / 2] 
+                + generalNums[(generalNums.size() / 2) - 1];
+		return evenMean / 2;
+	}
+    }
+};

@@ -1,0 +1,159 @@
+//Задав строку, содержащую цифры от 2 до 9 включительно, нам нужно вернуть
+//все возможные буквенные комбинации, которые может обозначать это число, как на кнопках телефона.
+
+
+
+//Оптимальное решение через рекурсию.
+//Смысл такой что мы представляем все наборы букв как дерево. Первая цифра это 1-ый уровен, 2-ая 2-ой и т.д.
+//В строке каждая буква имеет свой индекс(Это ведь массив символов). Таким образом переберая все символы мы получаем все вариации.
+//Если наш набор цифр состоит из 23 то первый уровень это клавиша 2(a,b,c), а второй клавиша 3(d,e,f).
+//Таким образом сначала для буквы a перебираем все d ,e ,f, далее для буквы b перебераем все буквы и т.д.
+//
+//Сначала проверяем есть ли в digits что нибудь, если нет то возвращаем ничего.
+//Далее создаём массив строк(карту), и записываем туда все буквы. Каждая строка обозначает одну клавишу.(соответствие)
+//Важно помнить что массив начинается с 0, а наша первая клавиш это 2.
+//Создаём вектор строк вывода и вызываем функцию рекурсии.
+
+//Функция состоит из двух частей. В первой мы проверяем остались ли еще цифры в данной комбинации, если нет добавляем ответ в вектор.
+//	если ещё есть с чем работать то функция продолжает работать.
+//В этой функции первым параметром передаём собранные комбинации. (Для первого вызова параметр пуст).
+//2-ой параметр это digits, строка с номерами нужных нам клавиш.(вначале это 234 например, затем 34, затем 4, инаконец пусто).
+//3-ий это массив строк со всеми буквами.
+//4-ый это строка output(финальный ответ). Символ & обязателен(для сохранения ответа в рекурсии). 
+
+//В функции мы сначала проверяем 2-ой параметр остались ли ещё цифры в данной комбинации. Если нет то возвращаем ответ в вектор ответа.
+//Если цифры еще есть тогда создаём строку letters в которую помещаем все буквы текущего уровня.
+//Далее создаём цикл в котором перебераем все буквы этого уровня.
+//В цикле опять вызываем нашу функцию. Первый параметр = 1-ому параметру + текущая буква. 2-ой параметр = цифры следующих уровней.(если было 234, тогда передаём только 34).
+
+//Таким образом каждый вызов функции работает практически независимо от предыдущего(рекурсия). Это круто.
+class Solution {
+public:
+    std::vector<std::string> letterCombinations(std::string digits) {
+        if (digits.empty()) return {};
+
+        std::string phone_map[] = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        std::vector<std::string> output;
+        backtrack("", digits, phone_map, output);
+        return output;
+    }
+
+private:
+    void backtrack(std::string combination, std::string next_digits, std::string phone_map[], std::vector<std::string>& output) {
+        if (next_digits.empty()) {
+            output.push_back(combination);
+        } else {
+            std::string letters = phone_map[next_digits[0] - '2'];
+            for (char letter : letters) {
+                backtrack(combination + letter, next_digits.substr(1), phone_map, output);
+            }
+        }
+    }
+};
+
+
+
+
+
+//Моё решение 2 дня эту хуйню писал но на литкоде runtime error в vs работает
+#include <iostream>
+#include <cmath>
+//#include <stdio.h>
+#include <string> // Работа со строками
+#include <fstream> // Работа с файлами в стиле C++
+#include <conio.h> //Обработка нажатия на клавиши
+#include <Windows.h>
+#include <WinCon.h>//Для выделения текста в консоли
+#include <vector>
+#include <algorithm>
+
+
+using namespace std;
+
+
+string recursionFun(int i, string tempAnswer, vector<vector<string>> letterVec,
+	vector<vector<int>> & recursionLevel)
+{
+	//если все буквы вектора пройдены, текущий лвл обнуляем, предыдущий + 1
+	if (i < recursionLevel.size() - 1 && recursionLevel[i + 1][2] == recursionLevel[i + 1][1])
+	{
+		recursionLevel[i + 1][2] = 0;
+		recursionLevel[i][2]++;
+	}
+	//(letterVec.at(номер вектора букв в letterVec).at(какую букву нужно добавить))
+	tempAnswer += letterVec.at(recursionLevel.at(i).at(0) - 1).at(recursionLevel.at(i).at(2));
+	//Переход на след уровень
+	i++;
+	//Если уровни кончились то завершаем
+	if (i == recursionLevel.size())
+	{
+		recursionLevel[i - 1][2] += 1;
+		if (recursionLevel[i - 1][2] == recursionLevel[i - 1][1])
+		{
+			recursionLevel[i - 1][2] = 0;
+			if(recursionLevel.size() > 1)
+				recursionLevel[i - 2][2]++;//Крашило если всего 1 уровень
+		}
+		return tempAnswer;
+	}
+	else
+		return recursionFun(i, tempAnswer, letterVec, recursionLevel);
+}
+vector<string> letterCombinations(string digits) {
+
+	vector<vector<string>> letterVec = {
+		{""}, { "a","b","c" }, { "d","e","f" }, { "g","h","i" }, { "j","k","l" },
+		{ "m","n","o" }, { "p","q","r", "s" }, { "t","u","v" }, { "w","x","y", "z" } };
+
+	vector<string> answer;
+	vector<vector<int>> recursionLevel;
+
+	int *num = new int[digits.size()];//хранилище индексов
+	for (int i = 0; i < digits.size(); i++)
+	{
+		num[i] = digits[i] - '0';
+		std::vector<int> temp;
+		temp.push_back(num[i]);//Индекс в векторе букв
+		temp.push_back(letterVec.at(num[i]).size());//Кол-во элементов в векторе букв
+		temp.push_back(0);//Какое значение нужно использовать
+		recursionLevel.push_back(temp);
+	}
+	delete[] num;
+	if (recursionLevel.size() == 1)
+	{
+		for (int j = 0; j < recursionLevel.at(0).at(1); j++)
+		{
+			string tempAnswer;
+			int i = 0;//Текущий уровень
+			answer.push_back(recursionFun(i, tempAnswer, letterVec, recursionLevel));
+		}
+		return answer;
+	}
+	else
+	{
+		while (recursionLevel[0][2] != recursionLevel[0][1]) {
+			string tempAnswer;
+			int i = 0;//Текущий уровень
+			answer.push_back(recursionFun(i, tempAnswer, letterVec, recursionLevel));
+			for (int j = recursionLevel.size() - 1; j >= 0; j--)
+			{
+				if (j > 0 && recursionLevel[j][2] == recursionLevel[j][1])
+				{
+					recursionLevel[j][2] = 0;
+					recursionLevel[j - 1][2]++;
+				}
+			}
+		}
+		return answer;
+	}
+}
+
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");// Русский язык в консоли
+
+	string digits = "23";
+	vector<string> answer = letterCombinations(digits);
+
+}

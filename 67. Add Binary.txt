@@ -1,0 +1,74 @@
+//Оптимальный код.
+//Создаём строку финального ответа. Берём длины строк, создаём переменную остатка. Запускаем цикл по всем символам ОБОИХ строк.
+//В цикле первым делом сразу добавляем остаток в сумму. Далее если в строках остались символы, добавляем их в сумму.
+//Если сумма больше 1, то в остаток добавляем 1, иначе 0. Делим (%) сумму на 2, остаток от деления преобразуем в строку и добавляем в фин. ответ.
+//После цикла проверяем есть ли ещё остаток от складывания, и если есть, добавляем его в финальный ответ.
+//Инверсируем конечный результат и возвращаем его.
+
+string addBinary(string a, string b) {
+	string res; //Строка ответа
+	int i = a.length() - 1;//Длина а
+	int j = b.length() - 1;//Длина б
+	int carry = 0;//Остаток
+	while (i >= 0 || j >= 0) {//Условие цикла
+		int sum = carry;//Добавляем остаток в сумму чисел
+		if (i >= 0) sum += a[i--] - '0';//ASCII value of 0 minus
+		if (j >= 0) sum += b[j--] - '0';//Если в строке остались символы, добавляем их сумму. При этом убавляем переменную j для смены симола в след. итерации
+		carry = sum > 1 ? 1 : 0;//Если сумма > 1 то остаток = 1, иначе 0.
+		res += to_string(sum % 2);//Преобразуем остаток от деления на 2 int sum в string и добавляем в ответ
+	}
+	if (carry) res += to_string(carry);//Если есть остаток, то добавляем его в финальную сумму
+	reverse(res.begin(), res.end());//Инверсия получившейся суммы.
+	return res;
+}
+
+//Мой код
+//Инверсировал входящие сторки. много if. Сложное условие цикла.
+class Solution {
+public:
+    string addBinary(string a, string b) {
+        string answer;
+        string greatestStr;
+        string smallestStr;
+        reverse(a.begin(), a.end());
+        reverse(b.begin(), b.end());
+        if (a.size() >= b.size()){
+            greatestStr = a; 
+            smallestStr = b;
+        }
+        else{
+            greatestStr = b;
+            smallestStr = a;
+        }
+        int remainder = 0;
+        for (int i = 0; i < greatestStr.size() || remainder != 0; i++){
+            int temp = 0;
+            if (i < smallestStr.size()) {
+                int high = greatestStr[i] - '0';
+                int low = smallestStr[i] - '0';
+                temp = low + high + remainder;
+                remainder = 0;
+                if (temp >= 2) {
+                    temp -= 2;
+                    remainder = 1;
+                }
+                answer.insert(answer.begin(), temp + '0');
+            }
+            else if(i < greatestStr.size()){
+                int high = greatestStr[i] - '0';
+                temp = high + remainder;
+                remainder = 0;
+                if (temp >= 2) {
+                    temp -= 2;
+                    remainder = 1;
+                }
+                answer.insert(answer.begin(), temp + '0');
+            }
+            else {
+                answer.insert(answer.begin(), remainder + '0');
+                remainder = 0;
+            }
+        }
+        return answer;
+    }
+};

@@ -1,0 +1,29 @@
+//Моё решение. Основной код взят из прошлой задачи. Отличием является то, что входящий вектор отсортирован. 
+//Так же во избежания дублирований решений, пропускаем одинаковые значения ПРИ вызове следующего числа.(Только когда число полностью не подошло). 
+class Solution {
+public:
+    void sol(int ind, int target, vector<int>&candidates, vector<int>&nums, vector<vector<int>>&ans) {//Рекурсивная функция.
+        if (ind == candidates.size()) {//Если в наборе максимальное кол-во чисел
+            if (target == 0)//Если таргет = 0, значит таргет == сумме всех чисел в векторе nums
+                ans.push_back(nums);//Добавляем набор чисел в вектор ответа.
+            return;//Возврат на шаг назад.
+        }
+        if (target >= candidates[ind]) {//если таргет больше или равен 
+            nums.push_back(candidates[ind]);//добавляем текущее число в вектор чисел, рассматриваемых для ответа
+            sol(ind + 1, target - candidates[ind], candidates, nums, ans);//вызов рекурсии. Отнимаем от таргета текущее число
+            nums.pop_back();//Когда функция вернётся удаляем последнее число из nums, чтобы продолжить искать ещё решения.
+        }
+        //Чтобы решения не дублировались, пропускаем одинаковые значения при вызове следующего числа.
+        while (ind < candidates.size() - 1 && candidates[ind] == candidates[ind + 1]) {
+            ind++;
+        }
+        sol(ind + 1, target, candidates, nums, ans);//Если число не подошло, вызываем рекурсию со следующим числом.
+    }
+    vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
+        vector<vector<int>>ans;//Вектор ответа
+        vector<int>nums;//вектор используемых чисел
+        sort(begin(candidates), end(candidates));//сортируем входящий вектор.
+        sol(0, target, candidates, nums, ans);//Вызов рекурсивной функции. 1ый параметр - индекс числа в векторе candidates
+        return ans;//Возврат ответа
+    }
+};

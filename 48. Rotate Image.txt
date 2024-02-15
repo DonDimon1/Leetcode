@@ -1,0 +1,28 @@
+//Моё решение. Runtime Beats 100.00% of users with C++. Стабильно!
+//Идея поворота матрицы на 90 градусов состоит в том, что сначала матрицу нужно транспонировать, а затем каждую строку реверсировать.
+
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix) {
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = i; j < matrix[i].size(); j++) {
+                swap(matrix[i][j], matrix[j][i]);
+            }
+            reverse(matrix[i].begin(), matrix[i].end());
+        }
+    }
+};
+
+//Либо вот так. Разница в том что тут сразу реверсируем всю исходную матрицу. ХЗ как лучше.
+
+class Solution {
+public:
+    void rotate(vector<vector<int>>& matrix) {
+        reverse(matrix.begin(), matrix.end());
+        for (int i = 0; i < matrix.size(); i++) {
+            for (int j = i; j < matrix[i].size(); j++) {
+                swap(matrix[i][j], matrix[j][i]);
+            }  
+        }
+    }
+};

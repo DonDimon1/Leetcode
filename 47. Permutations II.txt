@@ -1,0 +1,55 @@
+//Моё решение, основанное на оптимальном решении предыдущего задания. Runtime Beats 100.00% of users with C++, Memory Beats 57.70% of users with C++.
+//Суть осталась та же, однако нужно было добавить условие для проверки дублирующих значений. Если в предыдущей итерации уже было такое значение, то пропускаем
+//	текущую итерацию. Соответственно нужно сделать так, чтобы дублирующие значения стояли рядом. Для этого сортируем вектор по возрастанию перед циклом, и 
+//	в конце, для соответствия правильного порядка и дальнейшего безошибочного выполнения кода.
+
+class Solution {
+public:
+    void solve(vector<int>&nums, vector<vector<int>>&res, int s)//Рекурсивная функция
+    {
+        if (s == nums.size() - 1)//Условие выхода
+        {
+            res.push_back(nums);//Добавляем в финальный ответ
+            return;
+        }
+        sort(nums.begin() + s, nums.end());//Первоначально сортируем вектор
+        int lastNum = nums[0];//Переменная для записи предыдущего значения nums[i]
+        for (int i = s; i < nums.size(); i++)//i = s для того чтобы элементы перед s оставались на своём месте
+        {
+            if (i != s && nums[i] == lastNum) {//Добавляем проверку на дублирующие значения
+                lastNum = nums[i];//Обновляем предыдущее значение
+                continue;//Переходим на следующую итерацию
+            }      
+        
+            swap(nums[s], nums[i]);//Меняем главный элемент итерации (s), и следующий элемент i местами
+            solve(nums, res, s + 1);//Вызов следующей итерации с s + 1
+            swap(nums[s], nums[i]);//Возвращаем первоначальный порядок
+            lastNum = nums[i];//Обновляем предыдущее значение
+        }
+        sort(nums.begin() + s, nums.end());//Возвращаем правильный порядок в вектор.
+    }
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        vector<vector<int>> res;//Вектор финального ответа
+	    solve(nums, res, 0);//Вызов рекурсии(0 - основной элемент массива nums в текущей итерации) 
+	    return res;//Возврат финального ответа 
+    }
+};
+
+//Следующее решение это чит. Но Memory Beats 72.27% of users with C++.
+//next_permutation(nums.begin(),nums.end()) - автоматически переставляет вектор в следующую перестановку.(Чит).
+//Так же есть prev_permutation для получения предыдущей перестановки.
+
+class Solution {
+public:
+    vector<vector<int>> permuteUnique(vector<int>& nums) {
+        vector<vector<int>>res;
+        res.emplace_back(nums);
+        do{
+            next_permutation(nums.begin(),nums.end());
+            res.push_back(nums);
+        }while(nums != res[0])   ;   
+
+        res.pop_back();
+        return res;
+    }
+};

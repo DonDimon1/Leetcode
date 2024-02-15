@@ -1,0 +1,31 @@
+//Мой код
+//Простая рекурсия. Основная функция вызывает функцию рекурсии. В основной функции описана строка в которой находятся скобки "()".
+//В каждой функции рекурсии сначала проверяем условия выполнения. Отсеиваем неверные выводы. Если все шаги пройдены то записываем ответ в вектор.
+//Для разветвления в каждой функции есть цикл проходящий по обоим скобкам.
+class Solution {
+public:
+    void recursion(int n, int left,int right, int stepsNum, string variation, 
+        vector<string>& answer, string parentheses) {
+        if (stepsNum == 0  && variation[variation.size() - 1] != '(')
+                answer.push_back(variation);
+        if (left <= n && left >= right && stepsNum > 0)
+        {
+            for(char parenthesis : parentheses)
+            {
+                if (parenthesis == '(')
+                    recursion(n, left + 1, right, stepsNum - 1, variation + parenthesis, answer, parentheses);
+                else
+                    recursion(n, left, right + 1, stepsNum - 1, variation + parenthesis, answer, parentheses);
+            }
+        }
+    }
+    vector<string> generateParenthesis(int n) {
+        string parentheses = { "()" };
+        int left = 1, right = 0;
+        int stepsNum = n * 2 - 1;
+        string variation = "(";
+        vector<string> answer;
+        recursion(n, left, right, stepsNum, variation, answer, parentheses);
+        return answer;
+    }
+};

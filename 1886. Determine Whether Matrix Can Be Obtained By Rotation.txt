@@ -1,0 +1,20 @@
+//Моё решение. Runtime Beats 100.00% of users with C++. Стабильно!
+//Продолжение задания 48.
+//Идея поворота матрицы на 90 градусов состоит в том, что сначала матрицу нужно транспонировать, а затем каждую строку реверсировать.
+
+class Solution {
+public:
+    bool findRotation(vector<vector<int>>& mat, vector<vector<int>>& target) {
+        for (int count = 0; count < 4; count++) {
+            for (int i = 0; i < mat.size(); i++) {
+                for (int j = i; j < mat[i].size(); j++) {
+                    swap(mat[i][j], mat[j][i]);
+                }
+                reverse(mat[i].begin(), mat[i].end());
+            }
+            if (mat == target)
+                return true;
+        }
+        return false;
+    }
+};

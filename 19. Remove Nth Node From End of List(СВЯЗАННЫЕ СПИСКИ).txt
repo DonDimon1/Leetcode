@@ -1,0 +1,84 @@
+//Оптимизированный код за один цикл. (решение для двух указателей).
+//Наивным подходом здесь могло бы быть сохранение указателей на каждый узел в массиве. Чуть менее наивным подходом было бы 
+//хранить только указатели на последние n+1 узлов в массиве.
+//Однако , чтобы решить эту проблему всего за один проход и дополнительное пространство O(1) , нам нужно будет найти способ 
+//как достичь конца списка с помощью одного указателя , так и одновременно достичь n -го узла с конца со вторым указателем.
+//Для этого мы можем просто расположить наши два указателя на n узлов, дав первому указателю ( быстрому ) фору перед запуском 
+//второго указателя ( медленного ). Это приведет к тому, что медленный достигнет n -го узла от конца, в то время как быстрый 
+//достигнет конца.
+
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode *fast = head, *slow = head;
+        for (int i = 0; i < n; i++) fast = fast->next;
+        if (!fast) return head->next;
+        while (fast->next) fast = fast->next, slow = slow->next;
+        slow->next = slow->next->next;
+        return head;
+    }
+};
+
+
+//Мой код(ОН ПОЛУЧИЛСЯ ХОРОШИМ) что не может не радовать.
+//Тут надо понять указатели. Так же для экономии памяти возвращаем тот же указатель что и получаем (head). 
+//Сначала проходим все списки и узнаём их общее кол-во.
+//Определяем номер узла списка, который нужно удалить. Обрабатываем удаление 1-ого узла отдельно.
+//Заново перебираем все узлы до n - 1. n - 1 узел соединяем с n + 1 узлом. Всё.
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        if (head->next == NULL)
+		    return{};
+        ListNode *temp = head;
+        int count = 1;
+        while (temp->next != NULL)
+        {
+            temp = temp->next;
+            count++;
+        }
+        int redundant = count - n;
+        if (redundant == 0) {
+		    head = head->next;
+		    return head;
+	    }
+        temp = head;
+        for (int i = 1; i < count; i++)
+        {
+            if (i == redundant) {
+                temp->next = temp->next->next;
+                i++;
+                continue;
+            }
+            temp = temp->next;
+        }
+        return head;
+    }
+};
+
+//Мой код с одинм циклом но дофига if(Вроде бы хуже чем предыдущий)
+
+class Solution {
+public:
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        if (head->next == NULL)
+            return{};
+        ListNode *fast = head, *slow = head;
+        int count = 0;
+        while (true) {
+            if (count > n)
+                slow = slow->next;
+            if (fast->next == NULL)
+            {
+                if (n - count == 1){
+                    head = head->next;
+                    return head;
+                }
+                slow->next = slow->next->next;
+                return head;
+            }
+            fast = fast->next;
+            count++;
+        }
+    }
+};

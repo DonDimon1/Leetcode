@@ -1,0 +1,50 @@
+//Оптимальный по скорости 
+//Рекурсивная функция. Она сначала заходит на самый низкий уровень, а затем от туда возвращается обратно. Каждый новый уровень это n - 1.
+class Solution {
+public:
+    string countAndSay(int n) {//Рекурсивная функция. 
+    if (n == 1) return "1";//Когда n будет равно 1, возвращаем 1. (Выход из рекурсии).
+    string s = countAndSay(n - 1), ans;//Вызов рекурсивной функции. Её результат возвращается в строку s. Так же выполняется иницилизация строки ans с финальным ответом.
+    for (int i = 0, N = s.size(); i < N; ++i) {//Проходим по всем символам строки s.
+        char d = s[i];//Текущий символ итерации.
+        int cnt = 1;//Переменная количества вхождений символа в строку.
+        while (i + 1 < N && s[i + 1] == s[i]) ++i, ++cnt;//Смотрим сколько таких символов подряд в нашей строке.
+        ans += to_string(cnt) + d;//Добавляем в ответ количество данного символа и сам символ.
+    }
+    return ans;//Возвращаем ответ.
+}
+};
+
+
+//Мой код
+class Solution {
+    string recursion(string s) {
+        s += "0";
+        string answer;
+        int tempNum = 0;
+        char lastLatter = s[0];
+        for (char latter : s) {
+            if (lastLatter == latter) {
+                tempNum++;
+                continue;
+            }
+            else {
+                answer = answer + to_string(tempNum) + lastLatter;
+                lastLatter = latter;
+                tempNum = 1;
+            }
+
+        }
+        return answer;
+    }   
+public:
+    string countAndSay(int n) {
+        if (n == 1) return to_string(1);
+        int start = 1;
+        string s = to_string(start);
+        for (int i = 1; i < n; i++) {
+            s = recursion(s);
+        }
+        return s;
+    }
+};

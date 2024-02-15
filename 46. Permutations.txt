@@ -1,0 +1,104 @@
+//Оптимальное решение. Нет лишних векотров, мы работаем только с входным вектором напрямую.
+//Здесь s это главная переменная. Она указывает какой элемент будет главным в этой итерации. Главный элемент меняется местами со всеми остальными. Элементы, которые
+//	стоят перед s остаются неизменяемыми. (Они не меняются местами, поэтому их не нужно хранить в памяти отдельно как делал я). Помимо того, s указывает 
+//	на кол-во уже совершённых перестановок. Когда s будет равно размеру вектора nums мы сохраняем перестановку и выходим из рекурсии. (Очень круто придумано!)
+//После рекурсии возвращаем обратно первоначальный порядок вектора nums.
+void solve(vector<int>&nums, vector<vector<int>>&res, int s)//Рекурсивная функция
+{
+	if (s == nums.size() - 1)//Условие выхода
+	{
+		res.push_back(nums);//Добавляем в финальный ответ
+		return;
+	}
+	for (int i = s; i < nums.size(); i++)//i = s для того чтобы элементы перед s оставались на своём месте
+	{
+		swap(nums[s], nums[i]);//Меняем главный элеент итерации (s), и следующий элемент i местами
+		solve(nums, res, s + 1);//Вызов следующей итерации с s + 1
+		swap(nums[s], nums[i]);//Возвращаем первоначальный порядок
+	}
+}
+
+vector<vector<int>> permute(vector<int>& nums) {//Основная функция
+	vector<vector<int>> res;//Вектор фианльного ответа
+	solve(nums, res, 0);//Вызов рекурсии(0 - основной элемент массива nums в текущей итерации) 
+	return res;//Возврат финального ответа
+}
+
+
+//Второе моё решение. Обычная рекурсия. Уже быстрее Beats 54.97% of users with C++. Но есть вложенный цикл и 2 дополнительных вектора.
+
+class Solution {
+public:
+    void recursion(vector<int>& nums, vector<int> temp, vector<vector<int>>& answer) {
+        if (temp.size() == nums.size()) {
+            answer.push_back(temp);
+            return;
+        }
+            
+        for (int i = 0; i < nums.size(); i++) {
+            bool exit = false;
+            for (int j = 0; j < temp.size(); j++) 
+                if (temp[j] == nums[i]) {
+                    exit = true;
+                    break;
+                }
+            if (exit == true)
+                continue;
+            temp.push_back(nums[i]);
+            recursion(nums, temp, answer);
+            temp.pop_back();
+
+        }
+        return;
+    }
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> answer;
+        vector<int> temp;
+        recursion(nums, temp, answer);
+        return answer;
+    }
+};
+
+
+//Первоё моё решение. Адаптировал код из задания 31. Next Permutation. Получилось медленно.
+class Solution {
+public:
+    int factorial(int i)
+    {
+        if (i == 0) return 1;
+        else return i * factorial(i - 1);
+    }
+
+    vector<int> nextPermutation(vector<int>& nums) {//peakdown==breakingpoint;
+        int n = nums.size();
+        int peakdownn = -1;
+        for (int i = n - 2; i >= 0; i--) {
+            if (nums[i] < nums[i + 1]) {
+                peakdownn = i;
+                break;
+            }
+        }
+        if (peakdownn == -1) {
+            reverse(nums.begin(), nums.end());
+        }
+
+        else {
+            for (int i = n - 1; i > peakdownn; i--) {
+                if (nums[i] > nums[peakdownn]) {
+                    swap(nums[i], nums[peakdownn]);
+                    break;
+                }
+
+            }
+            reverse(nums.begin() + peakdownn + 1, nums.end());
+        }
+        return nums;
+    }
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> answer;
+        int count = factorial(nums.size());
+        for(int i = 0; i < count; i++)
+            answer.push_back(nextPermutation(nums));
+        return answer;
+    }
+};

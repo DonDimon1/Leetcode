@@ -1,0 +1,59 @@
+//Оптимальный код.
+
+ListNode* swapPairs(ListNode* head) {
+	ListNode dummy(0, head);  //Создаём -1 узел
+	ListNode *pre = &dummy, *first = head;//Добавляем 2 указателя на -1 и 1 узел
+
+	while (first && first->next) {//Пока 1ый и 2ой узел существуют
+		ListNode *second = first->next;//Инициализация второго узла
+		ListNode *nextPair = second->next;//Инициализация следующей пары
+
+		pre->next = second;//next -1ого узла меняем на 2ой узел вместо 1ого 
+		first->next = nextPair;//next 1ого узла меняем на 3ий узел вместо 2ого
+		second->next = first;//next второго узла меняем на 1ый вместо 3его
+
+		pre = first;//Подготовка к следующей итерации. pre теперь 2ой узел
+		first = nextPair;//Подготовка к следующей итерации. first теперь 3ий узел
+	}
+	return dummy.next;//Возврат 1 узла
+}
+
+
+
+
+
+//Мой код. Просто поменять указатели местами и все. 
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* swapPairs(ListNode* head) {
+        if(head == NULL)
+            return {};
+        if(head->next == NULL)
+            return head;
+        ListNode *previousNode = head;
+	    ListNode *secondNude = previousNode->next;
+	    ListNode *answer = secondNude;
+        ListNode *lastNode = previousNode;
+        while (previousNode != NULL && previousNode->next != NULL) {
+            secondNude = previousNode->next;
+            ListNode *temp = secondNude->next;
+            secondNude->next = previousNode;
+            if (previousNode != head)
+                lastNode->next = secondNude;
+            previousNode->next = temp;
+            lastNode = previousNode;
+            previousNode = temp;
+        }
+        return answer;
+    }
+};

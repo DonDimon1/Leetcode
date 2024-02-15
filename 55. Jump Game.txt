@@ -1,0 +1,60 @@
+//Мой код. По скорости Beats 91.03% of users with C++(Очень охуенно!), но по памяти Beats 8.12%.
+//Решил с помощью рекурсии(Жадный алгоритм). Это когда мы оптимизируем на каждом шаге, ищем максимальный, и не заводящий в тупик шаг, на каждой итерации.
+//Если индекс текущего элемента (i), на который мы попали, больше чем сохранённый максимальный индекс, то обновляем макс. индекс на текущий индекс (i).
+//Заходим в новую итерацию, только если наш текущий индекс i + значение текущего элемента (j = nums[i]) + значение элемента, на который мы теоретически
+//	перейдём (nums[i + j], подробно: nums[i + nums[i]]) в сумме будет больше чем текущий максимальный индекс.(i + j + nums[i + j] > *maxIndex).
+//Рекурсивная функция прерывается, когда i будет больше или равно размеру массива.
+
+class Solution {
+public:
+    bool recursion(vector<int>& nums, int i, int *maxIndex) {
+        int numSize = nums.size() - 1;
+        if (i  >= numSize)
+            return true;
+        *maxIndex = i;
+        for (int j = nums[i]; j >= 1; j--) {
+            int nextStep = i + j;
+            int nextValue = nextStep > numSize ? numSize : nextStep;
+            if ((nextStep + nums[nextValue]) > *maxIndex){
+                if (recursion(nums, nextStep, maxIndex) == true)
+                    return true;
+            }
+        }
+        return false;
+    }
+    bool canJump(vector<int>& nums) {
+        int maxIndex = -1;
+	    int *pMaxIndex = &maxIndex;
+	    return recursion(nums, 0, pMaxIndex);
+    }
+};
+
+
+
+//Вот два простых кода, иногда работают тоже быстро. Памяти требуют меньше моего.
+//Простейшее решение O(N) с постоянным пространством.
+//Идея состоит в том, чтобы работать в обратном направлении от последнего индекса. Следите за наименьшим индексом, который может «перейти» к 
+//последнему индексу. Проверьте, может ли текущий индекс перейти к этому наименьшему индексу.
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int last=nums.size()-1,i,j;
+        for(i=nums.size()-2;i>=0;i--){
+            if(i+nums[i]>=last)last=i;
+        }
+        return last<=0;
+    }
+};
+
+
+//Линейное и простое решение на C++
+//Я просто перебираю и обновляю максимальный индекс, которого могу достичь.
+class Solution {
+public:
+    bool canJump(vector<int>& nums) {
+        int i = 0, n = nums.size() ;
+        for (int reach = 0; i < n && i <= reach; ++i)
+            reach = max(i + nums[i], reach);
+        return i == n;
+    }
+};

@@ -1,0 +1,49 @@
+//Более оптимизированный код
+//Всего один цикл. Добавлены динамические границы слева и справа по всей ширине.
+//Вычисляется площадь всей ширины.
+//Далее границы ширины сужают для оптимизации.
+//Если height левой границы меньше height правой границы тогда сужаем левую границу.
+//Иначе сужаем правую.
+//В итоге две границы встретятся на самом большом значении height и цикл закончится.
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int maxArea = 0;
+        int tempMaxArea = 0;
+        int leftBorder = 0, reightBorder = height.size() - 1;
+        
+        while (leftBorder < reightBorder)
+        {
+            tempMaxArea = min(height[leftBorder], height[reightBorder]) * (reightBorder - leftBorder);
+            if (tempMaxArea > maxArea)
+                maxArea = tempMaxArea;
+            if (height[leftBorder] < height[reightBorder])
+                leftBorder++;
+            else
+                reightBorder--;
+        }
+        return maxArea;
+    }
+};
+
+
+
+//Мой код неоптимизированный
+//Два цикла которые сравнивают каждый height с каждым. Много повторных сравниваний.
+class Solution {
+public:
+    int maxArea(vector<int>& height) {
+        int maxArea = 0;
+        int tempMaxArea = 0;
+        for (int i = 0; i < height.size(); i++)
+        {
+            for (int j = 0; j < height.size(); j++)
+            {
+                tempMaxArea = min(height[i], height[j])  * abs(i - j);
+                if (tempMaxArea > maxArea)
+                    maxArea = tempMaxArea;
+            }
+        }
+        return maxArea;
+    }
+};

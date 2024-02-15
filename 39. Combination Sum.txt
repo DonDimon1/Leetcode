@@ -1,0 +1,56 @@
+//Оптимальное решение 100% runtime 50% memory
+//По смылсу тоже самое что и моё решение :)
+class Solution {
+public:
+    void sol(int ind, int target, vector<int>&candidates, vector<int>&nums, vector<vector<int>>&ans) {//Рекурсивная функция.
+        if (ind == candidates.size()) {//Если в наборе максимальное кол-во чисел
+            if (target == 0)//Если таргет = 0, значит таргет == сумме всех чисел в векторе nums
+                ans.push_back(nums);//Добавляем набор чисел в вектор ответа.
+            return;//Возврат на шаг назад.
+        }
+        if (target >= candidates[ind]) {//если таргет больше или равен 
+            nums.push_back(candidates[ind]);//добавляем текущее число в вектор чисел, рассматриваемых для ответа
+            sol(ind, target - candidates[ind], candidates, nums, ans);//вызов рекурсии. Отнимаем от таргета текущее число
+            nums.pop_back();//Когда функция вернётся удаляем последнее число из nums, чтобы продолжить искать ещё решения.
+        }
+        sol(ind + 1, target, candidates, nums, ans);//Если число не подошло, вызываем рекурсию со следующим числом.
+    }
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {//Основная функция
+        int i,j,n=candidates.size();//По идее лишнее
+        vector<vector<int>>ans;//Вектор ответа
+        vector<int>nums;//вектор используемых чисел
+        sol(0, target, candidates, nums, ans);//Вызов рекурсивной функции. 1ый параметр - индекс числа в векторе candidates
+        return ans;//Возврат ответа
+    }
+};
+
+
+//Моё решение beast 77% runtime, 53% memory. В принипе неплохо (почти лучший).
+//Обычная рекурсия. Перебор всех вариантов. Если в конце число не подошло, больше не используем его (параметр i).
+//
+class Solution {
+    void recursion(vector<int>& candidates, int target, vector<vector<int>>& answer, vector<int>& tempNum, int sum, int count) {
+        if (sum == target)
+            answer.push_back(tempNum);
+        else if (sum > target) {
+            return;
+        }
+        else {
+            for (int i = count; i < candidates.size(); i++) {
+                tempNum.push_back(candidates[i]);
+                sum += candidates[i];
+                recursion(candidates, target, answer, tempNum, sum, i);
+                sum -= candidates[i];
+                tempNum.pop_back();
+            }
+        }
+        return;
+    }
+public:
+    vector<vector<int>> combinationSum(vector<int>& candidates, int target) {
+        vector<vector<int>> answer;
+        vector<int> tempNum;
+        recursion(candidates, target, answer, tempNum, 0, 0);
+        return answer;
+    }
+};

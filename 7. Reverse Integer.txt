@@ -1,0 +1,52 @@
+//Оптимизированный код
+//Тоже самое что и мой просто круче написано.
+class Solution {
+public:
+    int reverse(int x) {
+        if(x == 0) {
+            return x;
+        }
+        long long rev = 0;
+        while(x) {
+            rev = rev * 10 + x % 10;
+            x /= 10;
+        }
+        if ( rev > INT_MAX || rev < INT_MIN) {
+            return 0;
+        } 
+        return rev;
+    }
+};
+
+
+//МОй код
+//Проверяем входит ли х в допустимый диапазон
+//Создаём вектор для хранения цифр числа
+//Делим число на 10. Остаток сохраняем в вектор. Повторяем по число не станет меньше 1.
+//Создаём инверсивное число. Из вектора берём цифру и домнажаем её на 10 в j степени для получения числа с нужным кол-вом цифр.
+
+class Solution {
+public:
+    int reverse(int x) {
+        if (pow(-2, 31) >= x || pow(2, 31) - 1 < x)
+            return 0;
+        int xMod = fabs(x);
+        int xRev = 0;
+        vector<int> xArr;
+        while (xMod >= 1)
+        {
+            xArr.push_back(xMod % 10);
+            xMod /= 10;
+        }
+        for (int i = 0, j = xArr.size() - 1; i < xArr.size(); i++, j--)
+        {
+            if (xRev + xArr[i] * pow(10, j) <= pow(2, 31) - 1)
+                xRev = xRev + xArr[i] * pow(10, j);
+            else
+                return 0;
+        }
+        if (x < 0)
+            xRev *= -1;
+        return xRev;
+    }
+};

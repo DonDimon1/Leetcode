@@ -1,0 +1,97 @@
+//Сам не решал. Пришлось поебать мозги даже над пониманием.
+
+//Здесь мы сосредоточимся на обобщенной реализации (kSum).
+//Для 3Sum мы перечислим каждое значение в одном цикле, а для остальной части массива используем шаблон с двумя указателями. 
+//Для kSum у нас будет k - 2 вложенных цикла для перечисления всех комбинаций k - 2 значений.
+
+//Мы можем реализовать k - 2 циклов с помощью рекурсии. В качестве параметров мы передадим начальную точку и k. 
+//Когда k == 2, мы будем вызывать twoSum, завершая рекурсию.
+
+//У нас будет 3и функции main и рекурсия и twoSum
+//В main мы сортируем входной массив по возрастанию
+//И возвращаем вторую функцию kSum с параметрами(nums, k, start = 0, target)
+
+//Во второй функции kSum проводим основные вычисления(функция рекурсивная).
+//Для начала рекурсивной функции нужно проверить несколько условий.
+//1) Если у нас закончились числа для сложения, возвращаем ответ if(start == nums.size())
+//2) Если наименьшее оставшееся число (start) больше target / k или если наибольшее значение в nums меньше target / k,
+//	то мы не сможем получить сумму target. Возвращаем что есть.
+//3) Если k == 2 тогда вызываем twoSum и возвращаем его ответ.
+//далее нам нужно перебрать весь массив num, i = start. Если значение повторяется, пропускаем его.
+//Рекурсивно вывываем kSum с параметрами: start = i + 1, k = k - 1, target - nums[i].
+//Для каждого возвращаемого значения добавляем обратно nums[i] и добавляем это всё к результату.
+
+//В twoSum просто используем верхний и нижний барьер. Нижний = start, верхний nums.size() - 1;
+//Если сумма верхнего + нижнего меньше target, увеличиваем нижний, если больше, то уменьшаем верхний.
+//При этом пропускаем повторяющиеся значения. Таким образом ищите пару значений, добовляйе их в 
+//	результат, и по окончанию цикла верните его.
+
+
+/*Как работает цикл в строке 33?
+kSum возвращает все наборы, сумма которых равна целевому значению, начиная с start. Таким образом, мы перебираем каждое 
+решение vector<int>& subset, которое суммируется с target - nums[i]использованием k-1элементов, чтобы мы могли создать решение, 
+которое начинается с nums[i], гарантируя, что мы не включаем nums[i]снова, начиная kSum с i+1. Мы можем это сделать, потому что 
+kSum возвращает a, vector<vector<int>>поэтому мы можем перебирать каждый vector<int>. По сути, мы находим все решения, 
+начинающиеся с nums[i].*/
+
+
+class Solution {
+public:
+    vector<vector<int>> fourSum(vector<int>& nums, int target) {
+        sort(begin(nums), end(nums));
+        return kSum(nums, target, 0, 4);
+    }
+	
+    vector<vector<int>> kSum(vector<int>& nums, long long target, int start, int k) {
+        vector<vector<int>> res;
+        
+        // If we have run out of numbers to add, return res.
+        if (start == nums.size()) {
+            return res;
+        }
+        
+        // There are k remaining values to add to the sum. The 
+        // average of these values is at least target / k.
+        long long average_value = target / k;
+        
+        // We cannot obtain a sum of target if the smallest value
+        // in nums is greater than target / k or if the largest 
+        // value in nums is smaller than target / k.
+        if  (nums[start] > average_value || average_value > nums.back()) {
+            return res;
+        }
+            
+        if (k == 2) {
+            return twoSum(nums, target, start);
+        }
+    
+        for (int i = start; i < nums.size(); ++i) {
+            if (i == start || nums[i - 1] != nums[i]) {
+                for (vector<int>& subset : kSum(nums, static_cast<long long>(target) - nums[i], i + 1, k - 1)) {
+                    res.push_back({nums[i]});
+                    res.back().insert(end(res.back()), begin(subset), end(subset));
+                }
+            }
+        }
+                                            
+        return res;
+    }
+	
+    vector<vector<int>> twoSum(vector<int>& nums, long long target, int start) {
+        vector<vector<int>> res;
+        int lo = start, hi = int(nums.size()) - 1;
+    
+        while (lo < hi) {
+            int curr_sum = nums[lo] + nums[hi];
+            if (curr_sum < target || (lo > start && nums[lo] == nums[lo - 1])) {
+                ++lo;
+            } else if (curr_sum > target || (hi < nums.size() - 1 && nums[hi] == nums[hi + 1])) {
+                --hi;
+            } else {
+                res.push_back({ nums[lo++], nums[hi--] });
+            }
+        }
+                                                           
+        return res;
+    }
+};
