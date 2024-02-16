@@ -1,4 +1,4 @@
-//Оснавная идея в 15.
+//РћСЃРЅРѕРІРЅР°СЏ РёРґРµСЏ РІ 15.
 class Solution {
 public:
     int threeSumClosest(vector<int>& nums, int target) {
