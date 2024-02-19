@@ -1,0 +1,108 @@
+//Одно из бытрейших решений. Чуть лучше чем мой код по рантайму и мемори.
+//Идея решения в хэшировании значений для определения истинности условий. Итерации кода идут не как у меня слева направо сверху вниз, а сверху вниз слева направо, 
+//	т.е. не по строкам а по столбцам. В хеш записываем три параметра. Номер строки, положительную (верхнюю) и отрицательную (нижнюю) диагональ.
+//Отрицательная диагональ идёт снизу вверх слева направо: Пример, при n = 4, формула:lowerDiagonal[строка + столбец]:   0 1 2 3
+//														     ___________
+//	 												 начало тут: 0| 0 1 2 3				     
+//							  		    					     1| 1 2 3 4
+//														     2| 2 3 4 5
+//  														     3| 3 4 5 6
+//
+//Положительная диагональ идёт сверху вниз слева направо: Пример, при n = 4, формула: upperDiagonal[n - 1 + колонка - строка];
+//														        0 1 2 3
+//														     ___________
+//	 												 начало тут: 0| 3 4 5 6				     
+//							  		    					     1| 2 3 4 5
+//														     2| 1 2 3 4
+//  												          	     3| 0 1 2 3
+							
+class Solution {
+public:
+    void solve(int col, int n, vector<vector<string>>&ans, vector<string>&board, vector<int>&leftrow, vector<int>&upperDiagonal, vector<int>&lowerDiagonal) {
+        if (col == n) {//Условие выхода из рекурсии
+            ans.push_back(board);//добавляем временный вектор в вектор финального ответа.
+            return;
+        }
+        for (int row = 0; row < n; row++) {//Цикл по всем элементам строки
+            //Если текущий элемент строки == 0 И 
+            if (leftrow[row] == 0 && lowerDiagonal[row + col] == 0 && upperDiagonal[n - 1 + col - row] == 0) {
+                board[row][col] = 'Q';//Присваиваем текущему элементу строки значение Q.
+                leftrow[row] = 1;//Сохраняем запись в какой строке поставлена Q
+                lowerDiagonal[row + col] = 1;//Сохраняем кэш нижней диагонали
+                upperDiagonal[n - 1 + col - row] = 1;//Сохраняем кэш верхней диагонали
+                solve(col + 1, n, ans, board, leftrow, upperDiagonal, lowerDiagonal);//Вызываем рекурсию.
+                board[row][col] = '.';//Меняем обратно с Q на точку
+                leftrow[row] = 0;//Обнуляем хеш строки
+                lowerDiagonal[row + col] = 0;//Обнуляем хеш нижней диагонали
+                upperDiagonal[n - 1 + col - row] = 0;//Обнуляем хеш верхней диагонали
+            }
+        }
+    }
+
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> ans;//Создаём вектор финального ответа
+        vector<string> board(n);//Вектор временного ответа
+        string s(n, '.');//Заполняем строку n-ным кол-вом точек
+        for (int i = 0; i < n; i++) {//Добавляем строки в вектор временного ответа
+            board[i] = s;
+        }
+        //Создаём вспомогательные вектора 
+        vector<int>leftrow(n, 0), upperDiagonal((2 * n) - 1, 0), lowerDiagonal((2 * n) - 1, 0);
+        solve(0, n, ans, board, leftrow, upperDiagonal, lowerDiagonal);//Вызываем функцию рекурсии
+        return ans;
+    }
+};
+
+
+//Мой код. Нормальный рантайм, но можно лучше. Решил с помощью рекурсии и грубой силы.
+//Создаём временный вектор строк, полностью заполненный точками. Запускаем функцию рекурсии. На первом уровне рекурсии в первой строке вектора первый элемент меняем с
+//	точки на Q. Далее проверяем все условия по строке колонке и диагонале. Если условия прошли, то переходим на следующий уровень рекурсии с параметром lvl + 1, 
+//	т.е. переходим на следующую строку. Если условия не прошли, меняем обратно Q на точку, и переходим к следующему элементу строки. Если lvl == n значит мы прошли 
+//	все условия по всем строкам, значит мы нашли решение. Добавляем его в вектор финального ответа.
+
+class Solution {
+public:
+    void recursion(int n, int lvl, vector<vector<string>>& answer, vector<string>& temp) {//Номер строки
+        if (lvl == n) {
+            answer.push_back(temp);
+            return;
+        }
+        for (int i = 0; i < n; i++) {//Ищем номер свободного столбца
+            temp[lvl][i] = 'Q';
+            int str = 0;
+            int col = 0;
+            int diag = 0;
+            for (int j = 0; j < n; j++) {
+                if (temp[lvl][j] == 'Q')//Проверяем строку на наличие Q
+                    str++;
+                if (temp[j][i] == 'Q')//Проверяем колонку на наличие Q
+                    col++;
+            }
+            if (col > 1 || str > 1) {
+                temp[lvl][i] = '.';
+                continue;
+            }
+            for (int j = 1; j < n; j++) {//Проверка диагоналей
+                if (lvl - j >= 0 && i - j >= 0 && temp[lvl - j][i - j] == 'Q')
+                    diag++;
+                if (lvl - j >= 0 && i + j < n && temp[lvl - j][i + j] == 'Q')
+                    diag++;
+                if(lvl + j < n && i - j >= 0 && temp[lvl + j][i - j] == 'Q')
+                    diag++;
+                if(lvl + j < n && i + j < n && temp[lvl + j][i + j] == 'Q')
+                    diag++;
+
+            }
+
+            if(diag == 0)
+                recursion(n, lvl + 1, answer, temp);
+            temp[lvl][i] = '.';
+        }
+    }
+    vector<vector<string>> solveNQueens(int n) {
+        vector<vector<string>> answer;
+        vector<string> temp(n, string(n, '.'));
+        recursion(n, 0, answer, temp);
+        return answer;
+    }
+};
