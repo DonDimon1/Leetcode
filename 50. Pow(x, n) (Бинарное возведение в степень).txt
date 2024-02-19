@@ -88,7 +88,43 @@ public:
     }
 };
 
+//Мой код. 305 из 306 тест кейсов.
+double myPow(double x, int n) {
+	int r = 3;
+	r = r << 3;
 
+	double u = pow(x, n);
+	if (n == 0 || x == 1)
+		return 1;
+	if (x == -1) {
+		if (n % 2 == 0)
+			return 1;
+		else
+			return -1;
+	}
+	double answer = x;
+	if (n >= 0) {
+		for (int i = 1; i < n; i++)
+			answer *= x;
+	}	
+	else {
+		for (int i = n + 1; i < 0; i++)
+			answer *= x;
+		answer = 1 / answer;
+	}
+	return answer;
+}
+
+int main()
+{
+	setlocale(LC_ALL, "Russian");// Русский язык в консоли
+
+	double x = 1.0000000000001;
+	int n = INT_MIN;
+	double answer = myPow(x, n);
+
+
+}
 
 
 
