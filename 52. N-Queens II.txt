@@ -1,0 +1,37 @@
+//Эта задача ничем не отличается от предыдущей. Просто вместо вектора ans возвращаем его размер ans.size().
+
+class Solution {
+public:
+    void solve(int col, int n, vector<vector<string>>&ans, vector<string>&board, vector<int>&leftrow, vector<int>&upperDiagonal, vector<int>&lowerDiagonal) {
+        if (col == n) {//Условие выхода из рекурсии
+            ans.push_back(board);//добавляем временный вектор в вектор финального ответа.
+            return;
+        }
+        for (int row = 0; row < n; row++) {//Цикл по всем элементам строки
+            //Если текущий элемент строки == 0 И 
+            if (leftrow[row] == 0 && lowerDiagonal[row + col] == 0 && upperDiagonal[n - 1 + col - row] == 0) {
+                board[row][col] = 'Q';//Присваиваем текущему элементу строки значение Q.
+                leftrow[row] = 1;//Сохраняем запись в какой строке поставлена Q
+                lowerDiagonal[row + col] = 1;//Сохраняем кэш нижней диагонали
+                upperDiagonal[n - 1 + col - row] = 1;//Сохраняем кэш верхней диагонали
+                solve(col + 1, n, ans, board, leftrow, upperDiagonal, lowerDiagonal);//Вызываем рекурсию.
+                board[row][col] = '.';//Меняем обратно с Q на точку
+                leftrow[row] = 0;//Обнуляем хеш строки
+                lowerDiagonal[row + col] = 0;//Обнуляем хеш нижней диагонали
+                upperDiagonal[n - 1 + col - row] = 0;//Обнуляем хеш верхней диагонали
+            }
+        }
+    }
+    int totalNQueens(int n) {
+        vector<vector<string>> ans;//Создаём вектор финального ответа
+        vector<string> board(n);//Вектор временного ответа
+        string s(n, '.');//Заполняем строку n-ным кол-вом точек
+        for (int i = 0; i < n; i++) {//Добавляем строки в вектор временного ответа
+            board[i] = s;
+        }
+        //Создаём вспомогательные вектора 
+        vector<int>leftrow(n, 0), upperDiagonal((2 * n) - 1, 0), lowerDiagonal((2 * n) - 1, 0);
+        solve(0, n, ans, board, leftrow, upperDiagonal, lowerDiagonal);//Вызываем функцию рекурсии
+        return ans.size();
+    }
+};
