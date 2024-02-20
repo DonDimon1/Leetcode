@@ -1,0 +1,25 @@
+//Мой код. Стабильно Runtime Beats 100.00% of users with C++. Чёт я не ождидал что этот код будет самым быстрым). Просто проходим по спирали по всем элементам.
+class Solution {
+public:
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        vector<int> answer;
+        int left = 0, right = matrix.at(0).size(), top = 0, bottom = matrix.size();
+        while (top != bottom) {//вправо
+            for (int i = left; i < right; i++)
+                answer.push_back(matrix[top][i]);
+            top++;
+            if (answer.size() == matrix.size() * matrix[0].size()) break;
+            for (int i = top; i < bottom; i++)//вверх
+                answer.push_back(matrix[i][right - 1]);
+            right--;
+            if (answer.size() == matrix.size() * matrix[0].size()) break;
+            for (int i = right - 1; i >= left; i--)//влево
+                answer.push_back(matrix[bottom - 1][i]);
+            bottom--;
+            for (int i = bottom - 1; i >= top; i--)//вниз
+                answer.push_back(matrix[i][left]);
+            left++;
+        }
+        return answer;
+    }
+};
