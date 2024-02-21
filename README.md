@@ -4,3 +4,4 @@ Important links for me:
 Про перемещения https://en.wikipedia.org/wiki/Permutation#Generation_in_lexicographic_order
 С++ туториал https://metanit.com/cpp/tutorial/
 Крутой сайт со всеми алгоритмами https://ru.algorithmica.org/
+В следующем посте рассматриваются все темы, связанные с интервалами, которые часто задают в интервью: https://www.zrzahid.com/maximum-number-of-overlapping-intervals/
