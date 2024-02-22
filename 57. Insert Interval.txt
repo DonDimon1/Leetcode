@@ -1,0 +1,107 @@
+//Оптимальный код. Код делим на три случая. 1) Пока нет перекрывающихся случаев перед объединением интервалов. 2) Наступление перекрывающегося случая и объединение интервалов.
+//	3) Добавление старых интервалов, после объединения нового интервалов.
+
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        int n = intervals.size(), i = 0;//Размер исходного массива и счётчик итераций
+        vector<vector<int>> res;//Вектор финального ответа
+        //случай 1: нет перекрывающихся случаев перед объединением интервалов
+        // сравните конечную точку интервалов с начальной точкой нового интервала
+        while (i < n && intervals[i][1] < newInterval[0]) {//Перебор по всем элементам исходного массива И пока 2ой параметр iого элемента меньше 1-ого значения нового интервала.
+            res.push_back(intervals[i]);//Добавляем старый интервал в вектор финального ответа.
+            i++;//Переходим на следующий элемент.
+        }
+        //случай 2: перекрывающийся случай и объединение интервалов
+        while (i < n && newInterval[1] >= intervals[i][0]) {//Перебор по всем элементам исходного массива И пока 2-ое значение нового интервала больше или равно 1-ому значению старого интервала.
+            newInterval[0] = min(newInterval[0], intervals[i][0]);//1-ое значение нового интервала = минимальному значению между 1-ым значением нового интервала и 1-ого значению старого интервала.
+            newInterval[1] = max(newInterval[1], intervals[i][1]);//2-ое значение нового интервала = максимальному значению между 2-ым значением нового интервала и 2-ым значению старого интервала.
+            i++;//Переходим на следующий элемент.
+        }
+        res.push_back(newInterval);//Добавляем новый интервал в финальный вектор.
+        // случай 3: нет перекрытия интервалов после объединения newinterval
+        while (i < n) {//Перебор по всем элементам исходного массива
+            res.push_back(intervals[i]);//Добавляем старый интервал в вектор финального ответа.
+            i++;//Переходим на следующий элемент.
+        }
+        return res;//Возвращаем финальный ответ.
+    }
+};
+
+
+
+
+
+//Мой код. Неожиданно, но он работает довольно быстро. Просто много if-ов.
+
+class Solution {
+public:
+    vector<vector<int>> insert(vector<vector<int>>& intervals, vector<int>& newInterval) {
+        vector<vector<int>> res;
+        if (intervals.size() == 0) {
+            res.push_back(newInterval);
+            return res;
+        }
+        int size = intervals.size();
+        int start = newInterval[0];
+        int end = newInterval[1];
+        //bool enable = false;
+        int enable = 0;
+        for (int i = 0; i < intervals.size(); i++) {
+            if (intervals[i][0] < start || intervals[i][0] > end) {//Если 1-ый НЕ попадает в интервал
+                if (intervals[i][1] < start || intervals[i][1] > end) {//Если 2-ой НЕ попадает в интервал
+
+                    if (enable == 1) {//Если интервал уже ОТКРЫТ
+                        vector<int> temp = { start, end };
+                        res.push_back(temp);
+                        enable = 2;
+                    }
+                    vector<int> temp = { intervals[i][0], intervals[i][1] };
+                    res.push_back(temp);
+                }
+                else {//Если 2-ой ПОПАДАЕТ в интервал
+                    start = intervals[i][0];
+                    enable = 1;
+                }
+            }
+            else {//Если 1-ый ПОПАДАЕТ в интервал
+                if (enable == 0) {//Если до этого интервал был ЗАКРЫТ
+                    start = newInterval[0];
+                    if (intervals[i][1] > end)//Если концовка меньше 2-ого 
+                        end = intervals[i][1];
+                    enable = 1;
+                }
+                else {//Если интервал ОТКРЫТ
+                    if (intervals[i][1] > end) {//Если 2-ой НЕ попадает в интервал
+                        end = intervals[i][1];
+                        vector<int> temp = { start, end };
+                        res.push_back(temp);
+                        enable = 2;
+                    }
+                    else {//Если 2-ой ПОПАДАЕТ в интервал
+                        end = newInterval[1];
+                    }
+                }
+            }
+        }
+        if (enable == 1) {
+            if (intervals.back().back() > end)
+                end = intervals.back().back();
+            vector<int> temp = { start, end };
+            res.push_back(temp);
+        }
+        if (enable == 0) {//Если до нового интервала так и не дошли
+            if(start > res.back().back())//Если новый интервал НЕ пересекается и стоит СЗАДИ
+                res.push_back(newInterval);
+            else if (end < res[0][0]) //Если новый интервал НЕ пересекается и стоит СПЕРЕДИ
+                res.insert(res.begin(), newInterval);
+            else {
+                for (int i = 1; i < intervals.size(); i++) {
+                    if (start > intervals[i - 1][1] && end < intervals[i][0]) 
+                        res.insert(res.begin() + i, newInterval);
+                }
+            }
+        }
+        return res;
+    }
+};
