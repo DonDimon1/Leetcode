@@ -1,0 +1,20 @@
+//Мой код. Счётчик букв перестаёт работать когда видит пробел. Когда пойдут снова буквы, счётчик обнулиться и начнёт считать заново.
+class Solution {
+public:
+    int lengthOfLastWord(string s) {
+        int ans = 0;
+        bool save = false;
+        for (int i = 0; i < s.size(); i++) {
+            if (s[i] != ' ' && save == false) {
+                ans = 0;
+                save = true;
+            }
+            else if (s[i] == ' ')
+                save = false;
+                
+            if (save)
+                ans++;
+        }
+        return ans;
+    }
+};
