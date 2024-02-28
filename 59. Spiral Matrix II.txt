@@ -1,0 +1,24 @@
+//ћой код. „уть изменил свой же код из задани€ 54. Ќичего сложного, создаю вектор нужного размера заполненый нул€ми, затем заполн€ю его по спирали нужными числами.
+class Solution {
+public:
+    vector<vector<int>> generateMatrix(int n) {
+        vector<vector<int>> matrix(n, vector<int>(n));
+        int volume = 1;
+        int left = 0, right = matrix.at(0).size(), top = 0, bottom = matrix.size();
+        while (top <= bottom) {//вправо		
+            for (int i = left; i < right; i++)
+                matrix[top][i] = volume++;
+            top++;
+            for (int i = top; i < bottom; i++)//вверх
+                matrix[i][right - 1] = volume++;
+            right--;
+            for (int i = right - 1; i >= left; i--)//влево
+                matrix[bottom - 1][i] = volume++;
+            bottom--;
+            for (int i = bottom - 1; i >= top; i--)//вниз
+                matrix[i][left] = volume++;
+            left++;
+        }
+        return matrix;
+    }
+};
