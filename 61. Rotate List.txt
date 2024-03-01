@@ -1,0 +1,60 @@
+//ѕросто совет: вс€кий раз, когда вы видите смену позиций типа вращени€, помните, что это шаблон, и его можно использовать дл€ оптимизации вашего кода. ¬ этом случае вам не 
+//нужно каждый раз считать k вращений, вам просто нужно рассчитать k%n вращений, где n Ч количество узлов. пройти весь св€занный список один раз лучше, чем выполнить k 
+//поворотов, когда k очень велико.
+
+//ќптимальный код. ѕроходим все узлы списка, замыкаем конечный узел на первый, ищем новую голову и хвост. 
+
+class Solution {
+public:
+    ListNode* rotateRight(ListNode* head, int k) {
+        if(!head) return head;
+        
+        int len=1; // количество узлов
+        ListNode *newH, *tail;
+        newH=tail=head;
+        
+        while(tail->next)  // получить количество узлов в списке
+        {
+            tail = tail->next;
+            len++;
+        }
+        tail->next = head; // замыкаем последний узел списка на первый узел списка
+
+        if(k %= len) 
+        {
+            for(auto i=0; i<len-k; i++) tail = tail->next; // ’востовой узел - это (len-k)-й узел (1-й узел - головной)
+        }
+        newH = tail->next; //Ќовое начало списка = следущему списку, после конечного элемента
+        tail->next = NULL; //¬ последнем элементе объевл€ем NULL в next
+        return newH;
+    }
+};
+
+
+
+
+//ћой код. 3 цикла. 1-ый добавл€ет все узлы в вектор, 2-ой выставл€ет их в правельный пор€док, 3-ий св€зывает узлы в новый пор€док.
+class Solution {
+public:
+    ListNode* rotateRight(ListNode* head, int k) {
+        if (head == NULL) return head;
+        vector<ListNode*> allNodes;
+        ListNode *temp = head;	
+        while (temp != NULL) {
+            allNodes.push_back(temp);
+            temp = temp->next;
+        }
+        int startPos = k % allNodes.size();				//ѕодсчЄт на какой позиции окажетс€ первый узел.
+        for (int i = 0; i < startPos; i++){
+            allNodes.insert(allNodes.begin(), allNodes.back());
+            allNodes.erase(allNodes.begin() + allNodes.size() - 1);
+        }
+        temp = allNodes[0];
+        for (int i = 1; i < allNodes.size(); i++) {
+            temp->next = allNodes[i];
+            temp = temp->next;
+        }
+        temp->next = NULL;
+        return allNodes[0];
+    }
+};
