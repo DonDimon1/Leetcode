@@ -5,3 +5,4 @@ Important links for me:
 С++ туториал https://metanit.com/cpp/tutorial/
 Крутой сайт со всеми алгоритмами https://ru.algorithmica.org/
 В следующем посте рассматриваются все темы, связанные с интервалами, которые часто задают в интервью: https://www.zrzahid.com/maximum-number-of-overlapping-intervals/
+123 задачи с IT-собеседований с разбором решений: https://workspace.ru/blog/123-zadachi-s-it-sobesedovaniy-s-razborom-resheniy/
